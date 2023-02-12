@@ -1,7 +1,9 @@
-use core::ops::Mul;
-use std::ops::{Add, Div, Sub};
-#[derive(Debug)]
+use std::{
+    fmt,
+    ops::{Add, Div, Mul, Sub},
+};
 
+#[derive(Debug)]
 pub struct Frac(i64, i64);
 
 impl Frac {
@@ -9,11 +11,18 @@ impl Frac {
         Frac(1, 1)
     }
 
+    //TODO generic from method to allow for building from multiple types
+    //may potentiall need a trait?
     pub fn from<I64>(a: i64) -> Self {
         Frac(a, 1)
     }
-
     fn simplify(&self) -> Self {
+        todo!();
+    }
+}
+
+impl PartialOrd for Frac {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         todo!();
     }
 }
@@ -52,12 +61,38 @@ impl Div for Frac {
         Frac(self.0 * rhs.1, self.1 * rhs.0)
     }
 }
+impl fmt::Display for Frac {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}/{}", self.0, self.1)
+    }
+}
 
 fn main() {}
 
 #[cfg(test)]
 mod tests {
+
     use crate::Frac;
+    #[test]
+    fn display() {
+        let a = Frac(1, 2);
+        let b = format!("{}", a);
+        let c = Frac(2231, 4124);
+        let d = format!("{}", c);
+        assert_eq!(b, "1/2");
+        assert_eq!(d, "2231/4124");
+    }
+
+    #[test]
+    fn from() {
+        let a = Frac::from::<i64>(5);
+        assert_eq!(a, Frac(5, 1));
+        let g = 2;
+        let t = 2.0;
+        //TODO I would like to implement some kind of value checking between types
+        //assert_eq!(a, 5)
+    }
+
     #[test]
     fn equality() {
         let a: Frac = Frac(1, 2);
@@ -106,5 +141,17 @@ mod tests {
         assert_eq!(a.simplify(), Frac(2, 1));
         assert_eq!(b.simplify(), Frac(35, 12));
         assert_eq!(c.simplify(), Frac(1, 1))
+    }
+    fn comparison() {
+        let a = Frac(7, 10);
+        let b = Frac(3, 10);
+        let p = a > b;
+        let q = a < b;
+        assert_eq!(p, true);
+        assert_eq!(q, false);
+        let p = a >= b;
+        let q = a <= b;
+        assert_eq!(p, true);
+        assert_eq!(q, false);
     }
 }
