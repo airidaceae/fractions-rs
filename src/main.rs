@@ -16,9 +16,31 @@ impl Frac {
     pub fn from<I64>(a: i64) -> Self {
         Frac(a, 1)
     }
+
     fn simplify(&self) -> Self {
-        todo!();
+        if self.0 == self.1 {
+            return Frac(1, 1);
+        } 
+        eprintln!("hi");
+        let temp: i64;
+        let other: i64;
+        if self.0 < self.1 {
+            temp = self.0;
+            other = self.1;
+        } else {
+            temp = self.1;
+            other = self.0;
+        }
+        for i in (0..temp+1).rev() {
+            if temp % i  == 0 {
+                if other % i == 0 {
+                    return Frac(self.0 / i, self.1 / i);
+                }
+            }
+        }
+        Frac(self.0, self.1)
     }
+
 }
 
 impl PartialOrd for Frac {
@@ -44,14 +66,26 @@ impl Mul for Frac {
 impl Add for Frac {
     type Output = Frac;
     fn add(self, rhs: Self) -> Self::Output {
-        todo!();
+        if self.1 == rhs.1 {
+            Frac(self.0 + rhs.0, self.1) 
+        } else {
+            let temp1 = Frac(self.0 * rhs.1, 1);
+            let temp2 = Frac(rhs.0 * self.1, 1);
+            Frac(temp1.0 + temp2.0, self.1 * rhs.1)
+        }
     }
 }
 
 impl Sub for Frac {
     type Output = Frac;
     fn sub(self, rhs: Self) -> Self::Output {
-        todo!();
+        if self.1 == rhs.1 {
+            Frac(self.0 - rhs.0, self.1) 
+        } else {
+            let temp1 = Frac(self.0 * rhs.1, 1);
+            let temp2 = Frac(rhs.0 * self.1, 1);
+            Frac(temp1.0 - temp2.0, self.1 * rhs.1)
+        }
     }
 }
 
@@ -67,7 +101,11 @@ impl fmt::Display for Frac {
     }
 }
 
-fn main() {}
+fn main() {
+    let f = Frac(4,2).simplify();
+    
+
+}
 
 #[cfg(test)]
 mod tests {
@@ -87,8 +125,6 @@ mod tests {
     fn from() {
         let a = Frac::from::<i64>(5);
         assert_eq!(a, Frac(5, 1));
-        let g = 2;
-        let t = 2.0;
         //TODO I would like to implement some kind of value checking between types
         //assert_eq!(a, 5)
     }
@@ -122,7 +158,7 @@ mod tests {
         let a = Frac(3, 2);
         let b = Frac(1, 4);
         let c = a - b;
-        assert_eq!(c, Frac(5, 4));
+        assert_eq!(c, Frac(10, 8));
     }
 
     #[test]
@@ -142,6 +178,8 @@ mod tests {
         assert_eq!(b.simplify(), Frac(35, 12));
         assert_eq!(c.simplify(), Frac(1, 1))
     }
+
+    #[test]
     fn comparison() {
         let a = Frac(7, 10);
         let b = Frac(3, 10);
