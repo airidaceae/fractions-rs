@@ -11,17 +11,7 @@ impl Frac {
         Frac(1, 1)
     }
 
-    //TODO generic from method to allow for building from multiple types
-    //may potentiall need a trait?
-    pub fn from<I64>(a: i64) -> Self {
-        Frac(a, 1)
-    }
-
     fn simplify(&self) -> Self {
-        if self.0 == self.1 {
-            return Frac(1, 1);
-        } 
-        eprintln!("hi");
         let temp: i64;
         let other: i64;
         if self.0 < self.1 {
@@ -100,11 +90,19 @@ impl fmt::Display for Frac {
         write!(f, "{}/{}", self.0, self.1)
     }
 }
+impl From<i64> for Frac {
+    fn from(value: i64) -> Self {
+        Frac(value, 1)
+    }
+}
+
+//this is on the back burner.
+/*impl From<f64> for Frac {
+    
+}*/
 
 fn main() {
-    let f = Frac(4,2).simplify();
-    
-
+    println!("{:#?}", a);
 }
 
 #[cfg(test)]
@@ -123,10 +121,10 @@ mod tests {
 
     #[test]
     fn from() {
-        let a = Frac::from::<i64>(5);
+        let a = Frac::from(5);
         assert_eq!(a, Frac(5, 1));
-        //TODO I would like to implement some kind of value checking between types
-        //assert_eq!(a, 5)
+        //let b = Frac::from(2.5);
+        //assert_eq!(b, Frac(5, 2));
     }
 
     #[test]
